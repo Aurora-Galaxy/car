@@ -41,3 +41,9 @@ func UserShow(c *gin.Context) {
 		c.JSON(200, res)
 	}
 }
+
+func Ping(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"msg": "Successfully",
+	})
+}

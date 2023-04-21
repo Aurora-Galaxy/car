@@ -14,13 +14,16 @@ type ChangeStatusService struct {
 }
 
 type ReserveService struct {
-	Id   int `json:"id" form:"id"`
-	Time int `json:"time" form:"time"`
+	Id        int   `json:"id" form:"id"`
+	StartTime int64 `json:"start_time" form:"start_time"`
+	Time      int   `json:"time" form:"time"`
 }
 
 // Change 改变充电桩的状态
 func (service ChangeStatusService) Change(token string) serializer.Response {
 	claims, _ := util.ParseToken(token)
+	var user model.User
+	model.DB.Table("user").Where("id = ?", claims.Id).First(&user)
 	StartTime := time.Now().UnixMilli()
 	var Endtime int64
 	if service.Time == 1 {
@@ -45,6 +48,17 @@ func (service ChangeStatusService) Change(token string) serializer.Response {
 			Status: 400,
 			Data:   nil,
 			Msg:    "添加充电桩开始和结束时间出错",
+			Error:  err,
+		}
+	}
+	//扣除相应的钱数
+	err = model.DB.Table("user").Where("id = ?", claims.Id).
+		Update("money", user.Money-service.Time).Error
+	if err != nil {
+		return serializer.Response{
+			Status: 400,
+			Data:   nil,
+			Msg:    "付款时出错",
 			Error:  err,
 		}
 	}
@@ -129,7 +143,7 @@ func (service *ReserveService) ReservePile(token string) serializer.Response {
 			Error:  err,
 		}
 	}
-	StartTime := time.Now().UnixMilli()
+	StartTime := service.StartTime
 	var Endtime int64
 	if service.Time == 1 {
 		Endtime = StartTime + time.Hour.Milliseconds()

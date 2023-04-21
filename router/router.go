@@ -14,6 +14,7 @@ func NewRouter() *gin.Engine {
 	r.Use(sessions.Sessions("mysession", store))
 	v1 := r.Group("api/v1")
 	{
+		v1.GET("/pingTest", api.Ping)
 		//用户操作
 		v1.POST("user/register", api.UserRegister) //注册
 		v1.POST("user/login", api.UserLogin)       //登录
@@ -28,10 +29,13 @@ func NewRouter() *gin.Engine {
 			authed.POST("user/phone", api.BindPhone) //绑定手机号
 			authed.GET("user/show", api.UserShow)    //展示用户信息
 			//authed.POST("user/picture",api.DistinguishPicture)
-			authed.POST("user/carnumber", api.BindCar)   //绑定车牌号
-			authed.POST("user/change", api.ChangeStatus) //更改充电桩使用状态
-			authed.POST("/user/reserve", api.Reserve)    //充电桩预约
-			authed.GET("/user/history", api.GetHistory)  //获取用户使用充电桩历史记录
+			authed.POST("user/carnumber", api.BindCar)                //绑定车牌号
+			authed.POST("user/change", api.ChangeStatus)              //更改充电桩使用状态
+			authed.POST("user/reserve", api.Reserve)                  //充电桩预约
+			authed.GET("user/history", api.GetHistory)                //获取用户使用充电桩历史记录
+			authed.POST("user/money", api.BindMoney)                  //用户充值
+			authed.POST("user/cancelpile", api.Cancel_pile)           //取消充电
+			authed.POST("user/cancelreserve", api.Cancel_ReservePile) //取消预约
 		}
 	}
 	return r

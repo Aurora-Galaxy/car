@@ -13,6 +13,7 @@ type User struct {
 	Email     string
 	Phone     string
 	CarNUmber string
+	Money     int
 	//Bantime   int
 	//OpenId    string `gorm:"unique"`
 	//Relations []User `gorm:"many2many:relation; association_jointable_foreignkey:relation_id"`
@@ -32,6 +33,7 @@ func (user *User) SetPassWord(password string) error {
 
 // CheckPassWord 校验密码
 func (user *User) CheckPassWord(password string) bool {
+	//输入的密码加密后与存储的密文进行比较
 	err := bcrypt.CompareHashAndPassword([]byte(user.PassWord), []byte(password))
 	if err != nil {
 		return false
